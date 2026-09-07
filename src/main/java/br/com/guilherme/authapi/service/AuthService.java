@@ -8,6 +8,7 @@ import br.com.guilherme.authapi.repository.UserRepository;
 import br.com.guilherme.authapi.security.JwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import br.com.guilherme.authapi.model.RefreshToken;
 
 @Service
 public class AuthService {
@@ -15,15 +16,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public User register(RegisterRequest request) {
@@ -58,6 +62,19 @@ public class AuthService {
     }
 
     public String generateToken(User user) {
+        return jwtService.generateToken(user);
+    }
+
+    public RefreshToken createRefreshToken(User user) {
+        return refreshTokenService.create(user);
+    }
+
+    public String refreshAccessToken(String token) {
+
+        RefreshToken refreshToken = refreshTokenService.validate(token);
+
+        User user = refreshToken.getUser();
+
         return jwtService.generateToken(user);
     }
 }

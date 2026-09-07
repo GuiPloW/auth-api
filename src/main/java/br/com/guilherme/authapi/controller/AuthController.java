@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import br.com.guilherme.authapi.dto.UserResponse;
+import br.com.guilherme.authapi.model.RefreshToken;
+import br.com.guilherme.authapi.dto.RefreshTokenRequest;
+import br.com.guilherme.authapi.dto.RefreshTokenResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -47,12 +50,33 @@ public class AuthController {
 
         User user = authService.login(request);
 
-        String token = authService.generateToken(user);
+        String accessToken = authService.generateToken(user);
+
+        RefreshToken refreshToken =
+                authService.createRefreshToken(user);
 
         LoginResponse response = new LoginResponse(
-                token,
+                accessToken,
+                refreshToken.getToken(),
                 "Bearer"
         );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+
+        String accessToken =
+                authService.refreshAccessToken(request.getRefreshToken());
+
+        RefreshTokenResponse response =
+                new RefreshTokenResponse(
+                        accessToken,
+                        "Bearer"
+                );
 
         return ResponseEntity.ok(response);
     }
