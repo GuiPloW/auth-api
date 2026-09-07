@@ -2,6 +2,8 @@ package br.com.guilherme.authapi.service;
 
 import br.com.guilherme.authapi.dto.RegisterRequest;
 import br.com.guilherme.authapi.dto.LoginRequest;
+import br.com.guilherme.authapi.exception.EmailAlreadyExistsException;
+import br.com.guilherme.authapi.exception.InvalidCredentialsException;
 import br.com.guilherme.authapi.model.Role;
 import br.com.guilherme.authapi.model.User;
 import br.com.guilherme.authapi.repository.UserRepository;
@@ -33,7 +35,7 @@ public class AuthService {
     public User register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("E-mail já cadastrado");
+            throw new EmailAlreadyExistsException("E-mail já cadastrado");
         }
 
         User user = new User();
@@ -49,13 +51,15 @@ public class AuthService {
     public User login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos"));
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("E-mail ou senha inválidos")
+                );
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
         )) {
-            throw new RuntimeException("E-mail ou senha inválidos");
+            throw new InvalidCredentialsException("E-mail ou senha inválidos");
         }
 
         return user;

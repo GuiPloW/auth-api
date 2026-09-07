@@ -1,5 +1,6 @@
 package br.com.guilherme.authapi.service;
 
+import br.com.guilherme.authapi.exception.InvalidRefreshTokenException;
 import br.com.guilherme.authapi.model.RefreshToken;
 import br.com.guilherme.authapi.model.User;
 import br.com.guilherme.authapi.repository.RefreshTokenRepository;
@@ -42,12 +43,12 @@ public class RefreshTokenService {
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(token)
                 .orElseThrow(() ->
-                        new RuntimeException("Refresh token inválido")
+                        new InvalidRefreshTokenException("Refresh token inválido")
                 );
 
         if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new RuntimeException("Refresh token expirado");
+            throw new InvalidRefreshTokenException("Refresh token expirado");
         }
 
         return refreshToken;
@@ -57,7 +58,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(token)
                 .orElseThrow(() ->
-                        new RuntimeException("Refresh token inválido")
+                        new InvalidRefreshTokenException("Refresh token inválido")
                 );
 
         refreshTokenRepository.delete(refreshToken);
