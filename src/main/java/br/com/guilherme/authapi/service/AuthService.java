@@ -69,6 +69,10 @@ public class AuthService {
         return refreshTokenService.create(user);
     }
 
+    public void logout(String refreshToken) {
+        refreshTokenService.revoke(refreshToken);
+    }
+
     public String refreshAccessToken(String token) {
 
         RefreshToken refreshToken = refreshTokenService.validate(token);

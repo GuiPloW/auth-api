@@ -52,4 +52,14 @@ public class RefreshTokenService {
 
         return refreshToken;
     }
+
+    public void revoke(String token) {
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(token)
+                .orElseThrow(() ->
+                        new RuntimeException("Refresh token inválido")
+                );
+
+        refreshTokenRepository.delete(refreshToken);
+    }
 }
