@@ -4,11 +4,13 @@ import br.com.guilherme.authapi.dto.UserResponse;
 import br.com.guilherme.authapi.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController {
 
     private final UserRepository userRepository;
